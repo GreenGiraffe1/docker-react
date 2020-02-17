@@ -1,0 +1,20 @@
+version: '3'
+services:
+  web-app:    # User-specified
+    build:
+      context: .  # Working directory to start in
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - /app/node_modules  # Don't try to map this in ctn to anywhere else
+      - .:/app  # Maps current folder outside ctn (local) to /app in the ctn
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    # ports removed because they're not necessary to run the test
+    volumes:
+      - /app/node_modules
+      - .:/app
+    command: ["npm", "run", "test"]  # Override default ctn command

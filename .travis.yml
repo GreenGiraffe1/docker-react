@@ -1,0 +1,18 @@
+# .travis.yml
+
+sudo: required  # super-user permissions required for these Travis-CI operations
+services:
+  - docker  # Tell Travis-CI we need Docker pre-installed
+
+before_install:  # Series of command run before our tests run
+  - docker build -t mhed/docker-react -f Dockerfile.dev .  # command to build our container (dev) - (tag is same as github repo name) - didn't need to use the formal tag - but we did for clarity
+
+# Tell Travis how to run our test suite - commands need to run test suite
+# This is a series of commands - Travis watches the output of the commands & if it ever
+# gets a return a return status code other than ZERO
+# Travis will assume our build / test suite failed - and that code is broken
+script:
+  - docker run -e CI=true mhed/docker-react npm run test
+  # This is similar to docker run <image_id> npm run test
+  # Gotcha - "npm run test" remains open at the end - Travis would never finish
+  # So we'll add CI=true

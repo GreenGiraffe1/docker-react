@@ -5,7 +5,8 @@ services:
   - docker  # Tell Travis-CI we need Docker pre-installed
 
 before_install:  # Series of command run before our tests run
-  - docker build -t mhed/docker-react -f Dockerfile.dev .  # command to build our container (dev) - (tag is same as github repo name) - didn't need to use the formal tag - but we did for clarity
+  - docker build -t mhed/docker-react -f Dockerfile.dev .  # command to build our container (dev) - (tag is same as
+                                     # github repo name) - didn't need to use the formal tag - but we did for clarity
 
 # Tell Travis how to run our test suite - commands need to run test suite
 # This is a series of commands - Travis watches the output of the commands & if it ever
@@ -16,3 +17,22 @@ script:
   # This is similar to docker run <image_id> npm run test
   # Gotcha - "npm run test" remains open at the end - Travis would never finish
   # So we'll add CI=true
+
+deploy:
+  # edge: true  # May need to uncomment if having trouble deploying - this forces
+  # Travis to use the v2 (experimental version) of the deploy script
+  provider: elasticbeanstalk  # Travis-CI is configured to know how to deploy to EB automatically
+  region: "us-east-1"  # This is the region where my EB instance is running in AWS
+  app: "docker-react"
+  env: "DockerReact-env"
+  bucket_name: "elasticbeanstalk-us-east-1-860407834729" # S3 bucket - this is a harddrive running on AWS, Travis will
+                # zip my files up, send them to EB, and say "Deploy this!", this is the name of the bucket for Travis
+                # to put things in.  This was created for my when I made my EB.  Go to the list - serch in AWS for the
+                # bucket where my EB was put in.  Search for S3 in AWS
+  bucket_path: "docker-react"  # Only this because I haven't deployed before - next time I'll change this to whatever
+                               # EB generates for me on the first go - find it again in S3 - on the same page as
+                               # above ^^  Will have to click into the name of my App
+  on:
+    branch: master  # Says only deploy when the MASTER branch is pushed
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY

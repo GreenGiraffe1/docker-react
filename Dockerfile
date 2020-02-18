@@ -16,6 +16,7 @@ RUN npm run build
 
 # Just having a second "FROM" tells docker previous phase is over
 FROM nginx
+EXPOSE 80
 # --from= Syntax means "copy from another phase"
 # Location to copy to specific for nginx
 COPY --from=builder /app/build /usr/share/nginx/html
